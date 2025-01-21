@@ -48,7 +48,7 @@ New-Item -itemtype Directory -Path .\$folderName
 
 $script:logFile = ".\$folderName\TlsCertVarification.log"
 
-#This function is to record script progress
+#This function is to record script progress in a log file
 Function WriteLog 
 {
 Param ([string]$string, $color, [Switch]$nonInteractive)
@@ -69,14 +69,14 @@ Function ServerCertificateInventory
 {
 Param ([string]$server)
 $script:certtable = @()
-writeLog -color cyan "Collecting 3rd party certificate info for server $server"
+writeLog -color cyan "Collecting 3rd party certificate info from server: $server"
 
 try
 {
 $certs = Get-ExchangeCertificate -server $server -ErrorAction Stop | where-object {$_.IsSelfSigned -ne $TRUE}
 	if(!($certs))
 	{
-	writelog -color Red "No 3rd party certificate was found on the server $server"
+	writelog -color Red "No 3rd party certificate was found on the server: $server"
 	Continue
 	}
 }
@@ -134,7 +134,7 @@ $certCount = $script:certTable.count
 	writelog -color white $script:certTable[$j].thumbprint
 		if ($tlsCertName)
 		{
-		writelog -color white "TlsCertificateName value found on the Connector, checking further..."
+		writelog -color yellow "TlsCertificateName value found on the Connector, checking further..."
 			if ($tlsCertName -eq $script:certTable[$j].tls)
 			{
 			$certCheckpoint = $true
